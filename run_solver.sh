@@ -25,35 +25,49 @@ echo ""
 
 # Nabídka možností
 echo "Vyberte režim:"
-echo "  1) Interaktivní režim (zadávání vstupů)"
-echo "  2) Spuštění testů"
-echo "  3) Prolog konzole (ruční zadávání dotazů)"
+echo "  1) Interaktivní menu (doporučeno) - vyberte z validních kombinací"
+echo "  2) Manuální vstup - zadejte vlastní součty"
+echo "  3) Objevit validní kombinace (může trvat několik minut)"
+echo "  4) Spuštění testů"
+echo "  5) Prolog konzole (ruční zadávání dotazů)"
 echo ""
-read -p "Vaše volba [1-3]: " choice
+read -p "Vaše volba [1-5]: " choice
 
 case $choice in
     1)
         echo ""
-        echo "Spouštím interaktivní režim..."
+        echo "Spouštím interaktivní menu..."
+        echo ""
+        swipl -s matrix_solver_interactive.pl -g "main" -t halt
+        ;;
+    2)
+        echo ""
+        echo "Spouštím režim s manuálním vstupem..."
         echo ""
         swipl -s matrix_solver.pl -g "run" -t halt
         ;;
-    2)
+    3)
+        echo ""
+        echo "Spouštím objevování validních kombinací..."
+        echo ""
+        swipl -s discover_valid_combinations.pl
+        ;;
+    4)
         echo ""
         echo "Spouštím testy..."
         echo ""
         swipl -s test_matrix.pl -t halt
         ;;
-    3)
+    5)
         echo ""
         echo "Spouštím Prolog konzoli..."
         echo "Příkazy:"
-        echo "  ?- run.                    % interaktivní režim"
-        echo "  ?- example1.               % příklad"
-        echo "  ?- run_all_tests.          % spustit testy"
+        echo "  ?- main.                   % hlavní menu"
+        echo "  ?- run_interactive.        % interaktivní menu"
+        echo "  ?- run.                    % manuální vstup"
         echo "  ?- halt.                   % ukončit"
         echo ""
-        swipl -s matrix_solver.pl
+        swipl -s matrix_solver_interactive.pl
         ;;
     *)
         echo "Neplatná volba!"
