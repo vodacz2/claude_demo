@@ -11,10 +11,13 @@ Funkcionální Prolog aplikace pro řešení constraint satisfaction problému.
 sudo apt-get install swi-prolog
 ```
 
-**macOS:**
+**macOS (s Homebrew):**
 ```bash
 brew install swi-prolog
 ```
+
+**macOS (bez Homebrew):**
+Stáhněte DMG installer z https://www.swi-prolog.org/download/stable
 
 **Windows:**
 Stáhněte z https://www.swi-prolog.org/download/stable
@@ -23,29 +26,35 @@ Stáhněte z https://www.swi-prolog.org/download/stable
 
 ### 2. Spuštění
 
-**Nejjednodušší způsob:**
+**Nejjednodušší způsob (doporučeno):**
 ```bash
 ./run_solver.sh
+# Vyberte možnost 1 - Interaktivní menu
 ```
 
-**Nebo manuálně:**
+**Nebo přímo:**
 ```bash
-swipl -s matrix_solver.pl -g "run" -t halt
+swipl -s matrix_solver_interactive.pl -g "main" -t halt
 ```
 
 ---
 
-### 3. Zadání vstupů
+### 3. Výběr z validních kombinací
 
-Program se vás zeptá na:
+Program nabídne **pouze validní kombinace** součtů:
 
 ```
-Zadejte součet prvního řádku: 85.
-Zadejte součet druhého řádku: 86.
-Zadejte součty 9 sloupců: [19,19,19,19,19,19,19,19,19].
+Vyberte kombinaci součtů:
+═══════════════════════════════════════════════════════
+  1) Řádky: [85, 86], Sloupce: [19,19,19,19,19,19,19,19,19]
+  2) Řádky: [86, 85], Sloupce: [19,19,19,19,19,19,19,19,19]
+  3) Řádky: [90, 81], Sloupce: [19,19,19,19,19,19,19,19,19]
+  ...
+
+Vaše volba (číslo): 1.
 ```
 
-**DŮLEŽITÉ**: Nezapomeňte tečku (`.`) na konci každého vstupu!
+**Žádné nevalidní vstupy!** Program už ví, které kombinace mají řešení.
 
 ---
 
@@ -79,29 +88,56 @@ Nalezeno řešení:
 
 ## Další možnosti
 
+**Objevit nové validní kombinace:**
+```bash
+./run_solver.sh  # vyberte možnost 3
+# Doporučuji: Rychlý vzorek (100 řešení) - ~30 sekund
+```
+
 **Spustit testy:**
 ```bash
-./run_solver.sh  # vyberte možnost 2
+./run_solver.sh  # vyberte možnost 4
 ```
 
 **Prolog konzole:**
 ```bash
-swipl -s matrix_solver.pl
+swipl -s matrix_solver_interactive.pl
 ```
 
 ```prolog
-?- run.                                              % interaktivní režim
+?- main.                                             % hlavní menu
+?- run_interactive.                                  % interaktivní menu
 ?- solve_matrix(85, 86, [19,19,19,19,19,19,19,19,19], M).  % přímé volání
-?- find_all_solutions(85, 86, [19,19,19,19,19,19,19,19,19]).  % všechna řešení
 ```
+
+---
+
+## ⏱️ Časová náročnost
+
+**Interaktivní výběr**: Okamžitý (používá předem objevené kombinace)
+
+**Objevování nových kombinací** (jednorázově):
+- Rychlý vzorek (100): ~30 sekund
+- Střední vzorek (500): ~2 minuty
+- Velký vzorek (2000): ~10 minut
+- Všechna řešení: hodiny (obvykle není potřeba)
+
+💡 **Tip**: Začněte s rychlým vzorkem. Ten najde většinu běžných kombinací.
 
 ---
 
 ## Soubory
 
-- `matrix_solver.pl` - hlavní solver s CLP(FD)
-- `test_matrix.pl` - automatické testy
+**Hlavní soubory:**
+- `matrix_solver_interactive.pl` - interaktivní solver s menu (doporučeno)
+- `matrix_solver.pl` - původní solver s manuálním vstupem
+- `discover_valid_combinations.pl` - nástroj pro objevování validních kombinací
+- `valid_combinations.pl` - databáze validních kombinací
 - `run_solver.sh` - spouštěcí skript
+
+**Dokumentace a testy:**
+- `test_matrix.pl` - automatické testy
+- `QUICKSTART.md` - tento soubor
 - `README_matrix_solver.md` - detailní dokumentace
 - `EXAMPLES.md` - příklady vstupů k testování
 
