@@ -36,9 +36,9 @@ read -p "Vaše volba [1-5]: " choice
 case $choice in
     1)
         echo ""
-        echo "Spouštím interaktivní menu..."
+        echo "Spouštím interaktivní menu (okamžitá řešení)..."
         echo ""
-        swipl -s matrix_solver_interactive.pl -g "main" -t halt
+        swipl -s matrix_solver_interactive_v2.pl -g "main" -t halt
         ;;
     2)
         echo ""
@@ -48,9 +48,9 @@ case $choice in
         ;;
     3)
         echo ""
-        echo "Spouštím objevování validních kombinací..."
+        echo "Spouštím objevování validních kombinací (s uložením řešení)..."
         echo ""
-        swipl -s discover_valid_combinations.pl
+        swipl -s discover_valid_combinations_v2.pl
         ;;
     4)
         echo ""
