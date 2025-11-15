@@ -64,7 +64,7 @@ compute_column_sums([H1|T1], [H2|T2], [Sum|RestSums]) :-
     Sum #= H1 + H2,
     compute_column_sums(T1, T2, RestSums).
 
-% Najít všechna řešení a extrahovat unikátní kombinace součtů
+% Najít všechna řešení a extrahovat kombinace s maticemi
 discover_all_combinations :-
     writeln('╔════════════════════════════════════════════════════════╗'),
     writeln('║  Objevování validních kombinací součtů pro matici 2×9  ║'),
@@ -74,19 +74,19 @@ discover_all_combinations :-
     writeln('(Toto může trvat několik minut)'),
     writeln(''),
 
-    % Najít všechna řešení
+    % Najít všechna řešení S MATICEMI
     findall(
-        combination(RowSums, ColSums),
-        solve_matrix_unrestricted(_, RowSums, ColSums),
-        AllCombinations
+        solution(RowSums, ColSums, Matrix),
+        solve_matrix_unrestricted(Matrix, RowSums, ColSums),
+        AllSolutions
     ),
 
-    % Odstranit duplikáty
-    sort(AllCombinations, UniqueCombinations),
+    % Seskupit podle kombinací součtů (jedna kombinace může mít více řešení)
+    group_solutions_by_sums(AllSolutions, GroupedSolutions),
+    length(GroupedSolutions, UniqueCount),
 
     % Zobrazit výsledky
-    length(AllCombinations, TotalCount),
-    length(UniqueCombinations, UniqueCount),
+    length(AllSolutions, TotalCount),
 
     writeln(''),
     writeln('═══════════════════════════════════════════════════════'),
@@ -97,7 +97,7 @@ discover_all_combinations :-
 
     % Uložit do souboru
     open('valid_combinations.pl', write, Stream),
-    write_combinations_to_file(Stream, UniqueCombinations),
+    write_solutions_to_file(Stream, GroupedSolutions),
     close(Stream),
 
     writeln(''),
@@ -107,7 +107,7 @@ discover_all_combinations :-
     % Zobrazit prvních 10 kombinací
     writeln('Prvních 10 validních kombinací:'),
     writeln(''),
-    show_first_n_combinations(UniqueCombinations, 10).
+    show_first_n_solutions(GroupedSolutions, 10).
 
 % Zapsat kombinace do souboru
 write_combinations_to_file(Stream, Combinations) :-
