@@ -63,30 +63,56 @@ compute_column_sums([H1|T1], [H2|T2], [Sum|RestSums]) :-
     Sum #= H1 + H2,
     compute_column_sums(T1, T2, RestSums).
 
-% Najít řešení a uložit včetně matic
+% Najít řešení a uložit včetně matic - S PRŮBĚŽNÝM HLÁŠENÍM
 discover_sample_solutions(MaxSolutions) :-
     writeln('╔════════════════════════════════════════════════════════╗'),
     writeln('║  Objevování validních kombinací (vzorkování)           ║'),
     writeln('╚════════════════════════════════════════════════════════╝'),
     writeln(''),
     format('Hledám až ~w řešení (včetně matic)...~n', [MaxSolutions]),
+    writeln('Průběh bude zobrazován každých 10 řešení.'),
     writeln(''),
 
-    % Najít řešení
-    findall(
-        sol(RowSums, ColSums, Matrix),
-        (   solve_matrix_unrestricted(Matrix, RowSums, ColSums),
-            limit(MaxSolutions, true)
+    % Najít řešení s průběžným hlášením
+    nb_setval(solutions_found, []),
+    nb_setval(solution_count, 0),
+
+    (   solve_matrix_unrestricted(Matrix, RowSums, ColSums),
+        nb_getval(solution_count, Count),
+        Count < MaxSolutions,
+
+        % Přidat řešení do seznamu
+        nb_getval(solutions_found, CurrentSolutions),
+        nb_setval(solutions_found, [sol(RowSums, ColSums, Matrix)|CurrentSolutions]),
+
+        % Aktualizovat počítadlo
+        NewCount is Count + 1,
+        nb_setval(solution_count, NewCount),
+
+        % Zobrazit průběh každých 10 řešení
+        (NewCount mod 10 =:= 0 ->
+            % Spočítat unikátní kombinace
+            nb_getval(solutions_found, AllSols),
+            count_unique_combinations(AllSols, UniqueCount),
+            format('\rNalezeno: ~w řešení (~w unikátních kombinací)...', [NewCount, UniqueCount]),
+            flush_output
+        ;
+            true
         ),
-        AllSolutions,
-        [max_solutions(MaxSolutions)]
+
+        fail
+    ;
+        true
     ),
 
-    length(AllSolutions, Count),
+    % Získat finální seznam řešení
+    nb_getval(solutions_found, AllSolutions),
+    length(AllSolutions, FinalCount),
 
     writeln(''),
+    writeln(''),
     writeln('═══════════════════════════════════════════════════════'),
-    format('Nalezeno ~w řešení~n', [Count]),
+    format('Celkem nalezeno: ~w řešení~n', [FinalCount]),
     writeln('═══════════════════════════════════════════════════════'),
     writeln(''),
 
@@ -100,6 +126,16 @@ discover_sample_solutions(MaxSolutions) :-
 
     % Zobrazit přehled
     show_summary(AllSolutions).
+
+% Spočítat počet unikátních kombinací
+count_unique_combinations(Solutions, Count) :-
+    findall(
+        comb(R, C),
+        member(sol(R, C, _), Solutions),
+        AllCombs
+    ),
+    sort(AllCombs, UniqueCombs),
+    length(UniqueCombs, Count).
 
 % Zapsat řešení do souboru
 write_solutions_to_file(Stream, Solutions) :-
