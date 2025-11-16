@@ -48,14 +48,15 @@ run_interactive :-
     format('Nalezeno ~w validních kombinací s ~w řešeními.~n', [Count, length(Solutions)]),
     writeln(''),
     writeln('═══════════════════════════════════════════════════════'),
-    writeln('Vyberte kombinaci součtů:'),
+    writeln('Vyberte kombinaci součtů (s ukázkovým řešením):'),
     writeln('═══════════════════════════════════════════════════════'),
     writeln(''),
 
-    % Zobrazit menu
+    % Zobrazit menu s příklady řešení
     show_solutions_menu(GroupedSolutions, 1),
 
     writeln(''),
+    writeln('═══════════════════════════════════════════════════════'),
     write('Vaše volba (číslo): '),
     read(Choice),
 
@@ -96,13 +97,27 @@ group_solutions(Solutions, GroupedSolutions) :-
         GroupedSolutions
     ).
 
-% Zobrazit menu
+% Zobrazit menu s ukázkovými řešeními
 show_solutions_menu([], _).
 show_solutions_menu([group(R, C, Matrices)|Rest], N) :-
     length(Matrices, Count),
-    format('  ~w) Řádky: ~w, Sloupce: ~w (~w řešení)~n', [N, R, C, Count]),
+
+    % Zobrazit header
+    format('~n  ══ ~w) Řádky: ~w, Sloupce: ~w (~w řešení) ══~n', [N, R, C, Count]),
+
+    % Zobrazit první matici jako příklad
+    nth1(1, Matrices, FirstMatrix),
+    format('     Ukázkové řešení:~n', []),
+    print_matrix_indented(FirstMatrix),
+
     N1 is N + 1,
     show_solutions_menu(Rest, N1).
+
+% Výpis matice s odsazením
+print_matrix_indented([]).
+print_matrix_indented([Row|Rest]) :-
+    format('       ~w~n', [Row]),
+    print_matrix_indented(Rest).
 
 % Zobrazit všechny matice
 show_all_matrices([], _).
