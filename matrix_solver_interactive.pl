@@ -39,6 +39,15 @@ solve_matrix(RowSum1, RowSum2, ColSums, Matrix) :-
 
 % Validace vstupů
 validate_inputs(RowSum1, RowSum2, ColSums) :-
+    % Kontrola, že ColSums je seznam
+    (is_list(ColSums) ->
+        true
+    ;
+        writeln('CHYBA: Součty sloupců musí být zadány jako seznam se závorkami []!'),
+        writeln('Příklad správného formátu: [15,16,17,18,19,20,21,22,23]'),
+        writeln('(Nezapomeňte hranaté závorky na začátku a na konci!)'),
+        fail
+    ),
     TotalSum is (1 + 18) * 18 // 2,
     RowSum1 + RowSum2 =:= TotalSum,
     sum_list(ColSums, ColSumsTotal),
@@ -225,6 +234,7 @@ run :-
 
     % Vstup součtů sloupců
     writeln('Zadejte součty 9 sloupců jako seznam [S1,S2,S3,S4,S5,S6,S7,S8,S9]:'),
+    writeln('(Nezapomeňte hranaté závorky! Příklad: [15,16,17,18,19,20,21,22,23])'),
     read(ColSums),
 
     % Řešení
